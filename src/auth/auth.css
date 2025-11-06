@@ -1,3 +1,109 @@
-/* Placeholder for auth styles; reuse existing global styles */
+:root{
+  --card-bg:#fff;
+  --text:#111827;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --ring:#7c3aed;           /* фиолетовая */
+  --ring-pressed:#6d28d9;
+}
 
+.auth-wrap{
+  min-height:100dvh;
+  display:grid;
+  place-items:center;
+  background:#f9fafb;
+  padding:24px;
+}
 
+.auth-card{
+  width:100%;
+  max-width:420px;
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,.06);
+  padding:24px;
+}
+
+.auth-title{
+  margin:0 0 6px;
+  font-size:24px;
+  font-weight:700;
+  color:var(--text);
+}
+.auth-subtitle{
+  margin:0 0 16px;
+  color:var(--muted);
+  font-size:14px;
+}
+
+/* Tabs */
+.auth-tabs{
+  position:relative;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  background:#f3f4f6;
+  border-radius:8px;
+  padding:4px;
+  margin-bottom:16px;
+}
+.auth-tab{
+  border:none;
+  background:transparent;
+  padding:8px 0;
+  border-radius:6px;
+  font-weight:600;
+  color:#374151;
+  cursor:pointer;
+}
+.auth-tab.active{ color:#111827; }
+.auth-tab-indicator{
+  position:absolute;
+  top:4px; bottom:4px;
+  width:calc(50% - 4px);
+  border-radius:6px;
+  background:#fff;
+  border:1px solid var(--border);
+  transition:transform .2s ease;
+}
+.auth-tab-indicator.login{ transform:translateX(4px); }
+.auth-tab-indicator.register{ transform:translateX(calc(100% + 4px)); }
+
+/* Form */
+.auth-form{ display:grid; gap:12px; }
+.auth-label{ display:grid; gap:6px; font-weight:600; color:#111827; }
+.auth-input{
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:10px 12px;
+  font-size:14px;
+  outline:none;
+  background:#fff;
+}
+.auth-input:focus{
+  border-color:var(--ring);
+  box-shadow:0 0 0 3px rgba(124,58,237,.15);
+}
+
+.auth-button{
+  margin-top:4px;
+  width:100%;
+  border:none;
+  border-radius:10px;
+  padding:12px 14px;
+  font-weight:700;
+  color:#fff;
+  background:var(--ring);
+  cursor:pointer;
+}
+.auth-button:hover{ background:var(--ring-pressed); }
+.auth-button:disabled{ opacity:.7; cursor:not-allowed; }
+
+.auth-error{
+  color:#b91c1c;
+  background:#fee2e2;
+  border:1px solid #fecaca;
+  padding:8px 10px;
+  border-radius:8px;
+  font-size:13px;
+}

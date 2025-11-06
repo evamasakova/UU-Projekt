@@ -1,74 +1,74 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from './AuthContext'
+import { useState } from "react";
+import { useAuth } from "./AuthContext";
+import { useNavigate } from "react-router-dom";
 
-function RegisterForm({ onRegistered }) {
-  const { register } = useAuth()
-  const navigate = useNavigate()
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [message, setMessage] = useState('')
+export default function RegisterForm({ onRegistered }) {
+  const { register } = useAuth();
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e) {
-    e.preventDefault()
-    setMessage('')
-    const res = await register(name, email, password)
-    if (!res.ok) {
-      setMessage(res.error || 'Registration failed')
-      return
+  const submit = async (e) => {
+    e.preventDefault();
+    setErr("");
+    setLoading(true);
+    try {
+      const res = await register(form);
+      // если бэкенд сразу не логинит, можно вернуть на логин
+      if (!res?.token && onRegistered) onRegistered();
+      else navigate("/dashboard", { replace: true });
+    } catch (e) {
+      setErr(e?.response?.data?.message || "Registration failed");
+    } finally {
+      setLoading(false);
     }
-    if (res.token) {
-      navigate('/managed', { replace: true })
-    } else if (onRegistered) {
-      onRegistered()
-    }
-  }
+  };
 
   return (
-    <form className="auth-form" onSubmit={handleSubmit}>
-      <div className="field">
-        <label htmlFor="reg-name">Name</label>
+    <form className="auth-form" onSubmit={submit}>
+      <label className="auth-label">
+        Name
         <input
-          id="reg-name"
           type="text"
+          className="auth-input"
           placeholder="Your name"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          autoComplete="name"
+          value={form.name}
+          onChange={(e) => setForm(s => ({ ...s, name: e.target.value }))}
           required
         />
-      </div>
-      <div className="field">
-        <label htmlFor="reg-email">Email</label>
+      </label>
+
+      <label className="auth-label">
+        Email
         <input
-          id="reg-email"
           type="email"
+          className="auth-input"
           placeholder="you@example.com"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          autoComplete="email"
+          value={form.email}
+          onChange={(e) => setForm(s => ({ ...s, email: e.target.value }))}
           required
         />
-      </div>
-      <div className="field">
-        <label htmlFor="reg-password">Password</label>
+      </label>
+
+      <label className="auth-label">
+        Password
         <input
-          id="reg-password"
           type="password"
-          placeholder="••••••••"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          autoComplete="new-password"
+          className="auth-input"
+          placeholder="Min. 6 characters"
+          value={form.password}
+          onChange={(e) => setForm(s => ({ ...s, password: e.target.value }))}
           required
+          minLength={6}
         />
-      </div>
-      {message && <div className="message">{message}</div>}
-      <button className="primary-btn" type="submit">Create account</button>
+      </label>
+
+      {err && <div className="auth-error">{err}</div>}
+
+      <button className="auth-button" type="submit" disabled={loading}>
+        {loading ? "Registering…" : "Register"}
+      </button>
     </form>
-  )
+  );
 }
-
-export default RegisterForm
-
-

@@ -1,57 +1,62 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from './AuthContext'
+import { useState } from "react";
+import { useAuth } from "./AuthContext";
+import { useLocation, useNavigate } from "react-router-dom";
 
-function LoginForm() {
-  const { signIn } = useAuth()
-  const navigate = useNavigate()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [message, setMessage] = useState('')
+export default function LoginForm() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/dashboard";
 
-  async function handleSubmit(e) {
-    e.preventDefault()
-    setMessage('')
-    const res = await signIn(email, password)
-    if (!res.ok) {
-      setMessage(res.error || 'Login failed')
-      return
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setErr("");
+    setLoading(true);
+    try {
+      await login(form);
+      navigate(from, { replace: true });
+    } catch (e) {
+      setErr(e?.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
-    navigate('/managed', { replace: true })
-  }
+  };
 
   return (
-    <form className="auth-form" onSubmit={handleSubmit}>
-      <div className="field">
-        <label htmlFor="login-email">Email</label>
+    <form className="auth-form" onSubmit={submit}>
+      <label className="auth-label">
+        Email
         <input
-          id="login-email"
           type="email"
+          className="auth-input"
           placeholder="you@example.com"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          autoComplete="email"
+          value={form.email}
+          onChange={(e) => setForm(s => ({ ...s, email: e.target.value }))}
           required
         />
-      </div>
-      <div className="field">
-        <label htmlFor="login-password">Password</label>
+      </label>
+
+      <label className="auth-label">
+        Password
         <input
-          id="login-password"
           type="password"
+          className="auth-input"
           placeholder="••••••••"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          autoComplete="current-password"
+          value={form.password}
+          onChange={(e) => setForm(s => ({ ...s, password: e.target.value }))}
           required
         />
-      </div>
-      {message && <div className="message">{message}</div>}
-      <button className="primary-btn" type="submit">Sign in</button>
+      </label>
+
+      {err && <div className="auth-error">{err}</div>}
+
+      <button className="auth-button" type="submit" disabled={loading}>
+        {loading ? "Signing in…" : "Login"}
+      </button>
     </form>
-  )
+  );
 }
-
-export default LoginForm
-
-
