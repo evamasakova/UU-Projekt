@@ -1,34 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import NavBar from './components/navigation/NavBar'
+import HomePage from './pages/HomePage'
+import CampaignPage from './pages/CampaignPage'
+import UserProfilePage from './pages/UserProfilePage'
+import ManagedPage from './pages/ManagedPage'
+import AdminPage from './pages/AdminPage'
+import AuthPage from './auth/AuthPage'
+import ProtectedRoute from './app/ProtectedRoute'
+import AdminRoute from './app/AdminRoute'
+import DetailIndex from './pages/DetailIndex'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const location = useLocation()
+  const hideNav = location.pathname === '/login'
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div>
+      {!hideNav && <NavBar />}
+      <div style={{ paddingTop: hideNav ? 0 : 56 }}>
+        <Routes>
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/campaign" element={<CampaignPage />} />
+          <Route path="/login" element={<AuthPage />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/managed" element={<ManagedPage />} />
+          <Route path="/dashboard" element={<ManagedPage />} />
+          <Route path="/user/:id" element={<UserProfilePage />} />
+          <Route path="/detail" element={<DetailIndex />} />
+        </Route>
+
+        <Route element={<AdminRoute />}>
+            <Route path="/admin" element={<AdminPage />} />
+          </Route>
+
+          <Route path="/" element={<Navigate to="/home" replace />} />
+          <Route path="*" element={<Navigate to="/home" replace />} />
+        </Routes>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
 
