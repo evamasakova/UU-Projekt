@@ -3,26 +3,38 @@
 @tailwind utilities;
 
 /* App scaffolding */
-html, body, #root {
-	height: 100%;
+html,
+body,
+#root {
+  height: 100%;
 }
 
 body {
-	@apply bg-white text-gray-900 m-0;
-	font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  @apply bg-white text-gray-900 m-0;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Helvetica,
+    Arial,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol";
 }
 
 /* Button style baseline to match screenshot */
 .primary-button {
-	@apply inline-flex items-center rounded-md border text-sm font-semibold transition-colors;
-	@apply bg-gray-900 border-gray-900 text-white;
+  @apply inline-flex items-center rounded-md border text-sm font-semibold transition-colors;
+  @apply bg-gray-900 border-gray-900 text-white;
 }
 .primary-button:hover {
-	@apply bg-gray-800;
+  @apply bg-gray-800;
 }
 .primary-button--light {
-	@apply bg-white text-gray-900 border-gray-300;
+  @apply bg-white text-gray-900 border-gray-300;
 }
 .primary-button--light:hover {
-	@apply bg-gray-50;
+  @apply bg-gray-50;
 }
