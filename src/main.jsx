@@ -7,6 +7,7 @@ import HomePage from "./pages/HomePage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import ManagedCampaignsPage from "./pages/ManagedCampaignsPage.jsx";
 import DetailPage from "./pages/DetailPage.jsx";
+import ProjectDetailPage from "./pages/ProjectDetailPage.jsx";
 
 function AppRouter() {
   return (
@@ -20,6 +21,8 @@ function AppRouter() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/managed" element={<ManagedCampaignsPage />} />
           <Route path="/detail/:id" element={<DetailPage />} />
+          <Route path="/projectdetail" element={<ProjectDetailPage />} />
+
         </Routes>
       </div>
     </BrowserRouter>
