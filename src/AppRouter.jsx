@@ -5,21 +5,22 @@ import HomePage from "./pages/HomePage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import ManagedCampaignsPage from "./pages/ManagedCampaignsPage.jsx";
 import DetailPage from "./pages/DetailPage.jsx";
+import AuthPage from "./pages/AuthPage.jsx";
+import RequireAuth from "./components/RequireAuth.jsx";
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <Navigation />
-      <div>
-        <Routes>
-          <Route path="/" element={<Navigate to="/" replace />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/managed" element={<ManagedCampaignsPage />} />
-          <Route path="/detail/:id" element={<DetailPage />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<Navigate to="/auth" replace />} />
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/home" element={<RequireAuth><HomePage /></RequireAuth>} />
+        <Route path="/admin" element={<RequireAuth><AdminPage /></RequireAuth>} />
+        <Route path="/managed" element={<RequireAuth><ManagedCampaignsPage /></RequireAuth>} />
+        <Route path="/detail/:id" element={<RequireAuth><DetailPage /></RequireAuth>} />
+        <Route path="*" element={<Navigate to="/auth" replace />} />
+      </Routes>
     </BrowserRouter>
   );
 }
