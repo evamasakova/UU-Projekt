@@ -12,8 +12,8 @@ export default function AppRouter() {
       <Navigation />
       <div>
         <Routes>
-          <Route path="/" element={<Navigate to="/" replace />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/" element={<Navigate to="/home" replace />} />
+          <Route path="*" element={<Navigate to="/home" replace />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/managed" element={<ManagedCampaignsPage />} />
