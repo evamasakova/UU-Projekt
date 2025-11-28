@@ -17,7 +17,7 @@ async function handleResponse(resp) {
 
 export async function loginBasic({ email, password }) {
   email = email.toLowerCase();  
-  const resp = await fetch(`${API_BASE_URL}/authentication/login-basic`, {
+  const resp = await fetch(`/authentication/login-basic`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
@@ -27,13 +27,12 @@ export async function loginBasic({ email, password }) {
 
 export async function registerBasic({ name, email, password }) {
   email = email.toLowerCase();  
-  const createResp = await fetch(`${API_BASE_URL}/users/create-basic`, {
+  const resp = await fetch(`/users/create-basic`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, email, password }),
   });
 
-  await handleResponse(createResp);
-
+  await handleResponse(resp);
   return loginBasic({ email, password });
 }
