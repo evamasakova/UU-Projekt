@@ -9,7 +9,7 @@ export default function DetailPage() {
     <div className="min-h-screen py-10 space-y-8">
       <GoBackButton />
       <DetailPageHeader />
-      <AboutPanel />
+      <AboutPanel /> 
       <QandA />
     </div>
   );
