@@ -11,7 +11,6 @@ export default function DetailPage() {
     const {token} = useAuth();
     const {id} = useParams();
     const fetchDetailData = async () => {
-        console.log(id)
         const res = await fetch(`/projects/${id}`, {
             method: "GET",
             headers: {"Content-Type": "application/json", 'Authorization': `Bearer ${token}`},
@@ -23,7 +22,6 @@ export default function DetailPage() {
     useEffect(() => {
         fetchDetailData().then(data => {
             setDetailData(data);
-            console.log(data)
         });
 
     }, [id]);
