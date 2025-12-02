@@ -6,11 +6,15 @@ import AboutPanel from "../components/detailPage/AboutPanel.jsx";
 import QandA from "../components/detailPage/QandA.jsx";
 import {useAuth} from "../context/AuthContext.jsx";
 import DonatePanel from "../components/detailPage/DonatePanel.jsx";
+import PostLog from "../components/detailPage/PostLog.jsx";
 
 export default function DetailPage() {
+    const fetchedRef = React.useRef(false);
     const {token} = useAuth();
     const {id} = useParams();
     const fetchDetailData = async () => {
+        if (fetchedRef.current) return detailData;
+        fetchedRef.current = true;
         const res = await fetch(`/projects/${id}`, {
             method: "GET",
             headers: {"Content-Type": "application/json", 'Authorization': `Bearer ${token}`},
@@ -32,6 +36,7 @@ export default function DetailPage() {
             <DonatePanel goal={detailData.goalAmount} currentState={detailData.goalAmount / 2}/>
             <DetailPageHeader/>
             <AboutPanel/>
+            <PostLog id={id}/>
             <QandA/>
         </div>
     );
