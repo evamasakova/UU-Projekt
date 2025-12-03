@@ -1,6 +1,7 @@
 import React from "react";
 import GoBackButton from "../components/buttons/GoBackButton.jsx";
 import PrimaryButton from "../components/buttons/PrimaryButton.jsx";
+import { Link } from "react-router-dom";
 
 export default function ManagedCampaignsPage() {
     return (
@@ -11,7 +12,8 @@ export default function ManagedCampaignsPage() {
                     Managed Campaigns
                 </h3>
                 <p>In dev. Coming soon!</p>
-                <a href="/campaign-admin/666"><PrimaryButton>Go to managed campaign</PrimaryButton></a>
+             <Link to="/campaign-admin/666"><PrimaryButton>Go to managed campaign</PrimaryButton></Link>
+
             </div>
         </>
     );
