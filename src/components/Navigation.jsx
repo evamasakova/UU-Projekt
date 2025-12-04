@@ -31,7 +31,7 @@ export default function Navigation() {
         </div>
         <div className="flex items-center gap-4">
           <span className="text-sm text-gray-500 mr-1">
-            {user?.name || user?.email || "User"}
+            {user?.name || user?.email}
           </span>
           <Link to="/admin" className="no-underline">
             <PrimaryButton icon={<GearIcon />}>Admin</PrimaryButton>

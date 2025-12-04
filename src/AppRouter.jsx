@@ -1,5 +1,5 @@
 import React from "react";
-import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
+import {BrowserRouter, Routes, Route, Navigate, useLocation} from "react-router-dom";
 import Navigation from "./components/Navigation.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
@@ -9,13 +9,19 @@ import ManagedCampaignsPage from "./pages/ManagedCampaignsPage.jsx";
 import AuthPage from "./pages/AuthPage.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
 
+function NavigationWrapper() {
+  const location = useLocation();
+  if (location.pathname === "/auth") return null;
+  return <Navigation />;
+}
+
 export default function AppRouter() {
   return (
     <BrowserRouter>
-      <Navigation/>
+      <NavigationWrapper/>
       <div>
         <Routes>
-          <Route path="/" element={<Navigate to="/auth" replace/>}/>
+          <Route path="/" element={<Navigate to="/home" replace/>}/>
           <Route path="/auth" element={<AuthPage/>}/>
           <Route path="/home" element={<RequireAuth><HomePage/></RequireAuth>}/>
           <Route path="/admin" element={<RequireAuth><AdminPage/></RequireAuth>}/>
@@ -28,3 +34,4 @@ export default function AppRouter() {
     </BrowserRouter>
   );
 }
+

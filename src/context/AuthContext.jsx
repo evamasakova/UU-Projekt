@@ -4,22 +4,32 @@ import { loginBasic, registerBasic } from "../api/authApi.js";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(() => localStorage.getItem("authToken"));
   const [user, setUser] = useState(null);
 
+  
   useEffect(() => {
     const savedToken = localStorage.getItem("authToken");
-    const savedUser = localStorage.getItem("authUser");
+    const rawUser = localStorage.getItem("authUser");
 
     if (savedToken) setToken(savedToken);
-    if (savedUser) setUser(JSON.parse(savedUser));
+
+    if (rawUser && rawUser !== "undefined") {
+      try {
+        setUser(JSON.parse(rawUser));
+      } catch {
+        setUser(null);
+      }
+    }
   }, []);
 
+  
   const login = async ({ email, password }) => {
     const data = await loginBasic({ email, password });
 
     const userObj = {
       email: data.email ?? email,
+      name: data.name || data.email?.split("@")[0] || "User",
       role: data.role,
     };
 
@@ -37,7 +47,7 @@ export function AuthProvider({ children }) {
 
     const userObj = {
       email: data.email ?? email,
-      name: data.name || data.email?.split("@")[0] || "User",
+      name: data.name || name || data.email?.split("@")[0] || "User",
       role: data.role,
     };
 
@@ -57,16 +67,9 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  const value = {
-    token,
-    user,
-    isAuthenticated: !!token,
-    login,
-    register,
-    logout,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{token,user,isAuthenticated: !!token,login,register,logout,}}>{children}</AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
