@@ -1,42 +1,49 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import FundingCard from "./cards/CampaignCard.jsx";
-import {useAuth} from "../context/AuthContext.jsx";
+
+const mockCategories = ["Education", "General", "Technology", "Kids"] // TODO: replace mock data by API call later - for demo reason
+const mockCampaigns = [ // TODO: replace mock data by API call later - for demo reason
+    {
+        id: 1,
+        category: [mockCategories[1]],
+        name: "Potrebuji Monster",
+        description: "Ahoj, muj kamos student mikes potrebuje hondne monsteru. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+        goal: 50,
+        withdraw: 8,
+    },
+    {
+        id: 2,
+        category: [mockCategories[0]],
+        name: "Pomoc pro Studenta",
+        description: "Student potrebuje podporu pro studium a zivotni naklady. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+        goal: 120,
+        withdraw: 45,
+    },
+    {
+        id: 3,
+        category: [mockCategories[2]],
+        name: "Novy Notebook",
+        description: "Sbirejeme na novy notebook pro programovani. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+        goal: 9000,
+        withdraw: 220,
+    },     {
+        id: 4,
+        category: [mockCategories[2]],
+        name: "Novy Server pro vyvoj AI",
+        description: "Sbirejeme na novy server pro projekt ktery pomuze hledat na snimcich rakovinotvorne nadory. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+        goal: 9000,
+        withdraw: 220,
+    }
+];
+
 
 export default function CampaignList() {
-    const fetchedRef = React.useRef(false);
-    const {token} = useAuth();
     const [selectedCategory, setSelectedCategory] = useState("All");
-    const [campaigns, setCampaigns] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const fetchDashboardData = async () => {
-        if (fetchedRef.current) return [categories, campaigns];
-        fetchedRef.current = true;
-
-        /*
-        const resCat = await fetch(`/categories`, {  //todo: use later - categories not implemented yet on BE
-            method: "GET",
-            headers: {"Content-Type": "application/json", 'Authorization': `Bearer ${token}`},
-        });
-        */
-
-        const resCam = await fetch(`/projects`, {
-            method: "GET",
-            headers: {"Content-Type": "application/json", 'Authorization': `Bearer ${token}`},
-        });
-        return [[], await resCam.json()]; //Todo: return[await resCat.json(), await resCam.json()]
-    }
-
-    useEffect(() => {
-        fetchDashboardData().then(data => {
-            setCategories(data[0]);
-            setCampaigns(data[1]);
-        });
-    }, []);
 
     const filteredCampaigns =
         selectedCategory === "All"
-            ? campaigns
-            : campaigns.filter((c) => c.category.includes(selectedCategory));
+            ? mockCampaigns
+            : mockCampaigns.filter((c) => c.category.includes(selectedCategory));
     return (
         <div className="w-full lg:mx-8">
             <div className="flex items-center mb-6">
@@ -58,9 +65,9 @@ export default function CampaignList() {
                     onChange={(e) => setSelectedCategory(e.target.value)}
                 >
                     <option value="All">All Categories</option>
-                    {categories.map((cat, index) => (
-                        <option key={index} value={cat.name}>
-                            {cat.name}
+                    {mockCategories.map((cat) => (
+                        <option key={cat} value={cat}>
+                            {cat}
                         </option>
                     ))}
                 </select>
@@ -72,14 +79,14 @@ export default function CampaignList() {
                 lg:grid-cols-3
                 gap-4
             ">
-                {filteredCampaigns.map((c, index) => (
+                {filteredCampaigns.map((c) => (
                     <FundingCard
-                        key={index}
-                        id={c._id}
+                        key={c.id}
+                        id={c.id}
                         title={c.name}
                         description={c.description}
-                        goal={c.goalAmount}
-                        status={c.goalAmount / 2} //Todo: change to actual state
+                        goal={c.goal}
+                        status={c.withdraw}
                     />
                 ))}
             </div>

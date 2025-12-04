@@ -7,6 +7,7 @@ export default function HomePage() {
         <div className="flex justify-center mt-4">
             <CampaignList/>
         </div>
+
     </div>
   );
 }
