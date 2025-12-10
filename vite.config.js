@@ -1,24 +1,26 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
+const hostUrl = "http://localhost:"
 export default defineConfig({
+
   plugins: [react()],
   server: {
     proxy: {
       "/authentication": {
-        target: "http://localhost:", 
+        target: hostUrl, 
         changeOrigin: true,
       },
       "/users": {
-        target: "http://localhost:", 
+        target: hostUrl, 
         changeOrigin: true,
       },
       "/project": {
-        target: "http://localhost:",
+        target: hostUrl,
         changeOrigin: true,
       },
       "/categories": {
-        target: "http://localhost:",
+        target: hostUrl,
         changeOrigin: true,
       }
     }
