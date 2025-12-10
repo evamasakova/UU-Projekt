@@ -12,6 +12,7 @@ export default function AuthForm() {
     password: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [registerError, setRegisterError] = useState("");
 
   const { login, register } = useAuth();
   const navigate = useNavigate();
@@ -40,12 +41,14 @@ export default function AuthForm() {
 
   const handleRegisterSubmit = async (event) => {
     event.preventDefault();
+    setRegisterError("");
     setIsSubmitting(true);
     try {
       await register(registerForm);
       navigate("/home");
     } catch (error) {
       console.error("Register error", error);
+      setRegisterError(error.message || "Registration failed");
     } finally {
       setIsSubmitting(false);
     }
@@ -77,12 +80,9 @@ export default function AuthForm() {
             type="button"
             onClick={() => setMode("register")}
             className={`flex-1 rounded-md px-3 py-2 transition-colors ${
-              !isLogin
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
+              !isLogin ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
             }`}
           >
-            {" "}
             Register
           </button>
         </div>
@@ -123,6 +123,12 @@ export default function AuthForm() {
           </form>
         ) : (
           <form className="mt-6 space-y-4" onSubmit={handleRegisterSubmit}>
+            {registerError && (
+              <div className="text-sm text-red-600 bg-red-50 border border-red-200 px-3 py-2 rounded">
+                {registerError}
+              </div>
+            )}
+
             <div className="space-y-1 text-left">
               <label className="text-sm font-medium text-gray-700">Name</label>
               <input
@@ -153,9 +159,7 @@ export default function AuthForm() {
                 type="password"
                 required
                 value={registerForm.password}
-                onChange={(e) =>
-                  handleRegisterChange("password", e.target.value)
-                }
+                onChange={(e) => handleRegisterChange("password", e.target.value)}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-100"
               />
             </div>
