@@ -13,7 +13,7 @@ export default function CampaignCreate() {
     fundingGoal: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  
   const categories = [
     "Technology",
     "Arts & Culture",
