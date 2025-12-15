@@ -1,7 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+const hostUrl = "http://localhost:80"
 
-const hostUrl = "http://localhost:"
+//const hostUrl = "https://convicted-consumer-product-accordingly.trycloudflare.com"
 export default defineConfig({
 
   plugins: [react()],
@@ -15,7 +16,7 @@ export default defineConfig({
         target: hostUrl, 
         changeOrigin: true,
       },
-      "/project": {
+      "/projects": {
         target: hostUrl,
         changeOrigin: true,
       },

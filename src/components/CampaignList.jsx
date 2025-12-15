@@ -1,32 +1,41 @@
 import React, { useEffect, useState } from "react";
 import FundingCard from "./cards/CampaignCard.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
-
+import { useApi } from "../api/apiClient.js";
 export default function CampaignList() {
   const fetchedRef = React.useRef(false);
   const { token } = useAuth();
+  const api = useApi();
+
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [campaigns, setCampaigns] = useState([]);
   const [categories, setCategories] = useState([]);
+
   const fetchDashboardData = async () => {
     if (fetchedRef.current) return [categories, campaigns];
     fetchedRef.current = true;
+
+    const resCat = await api("/categories", { method: "GET" });
+    const resCam = await api("/projects", { method: "GET" });
+
+    console.log("Fetched categories and campaigns:", resCat, resCam);
+
+    return [await resCat, await resCam];
 
     /*
         const resCat = await fetch(`/categories`, {  //todo: use later - categories not implemented yet on BE
             method: "GET",
             headers: {"Content-Type": "application/json", 'Authorization': `Bearer ${token}`},
         });
-        */
-
-    const resCam = await fetch(`/projects`, {
+         const resCam = await fetch(`/projects`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
-    return [[], await resCam.json()]; //Todo: return[await resCat.json(), await resCam.json()]
+    return [await resCat.json(), await resCam.json()]; //Todo: return[await resCat.json(), await resCam.json()]
+  */
   };
 
   useEffect(() => {
