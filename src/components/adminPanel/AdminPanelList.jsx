@@ -54,19 +54,14 @@ const handleAddCategory = async (event) => {
   if (!trimmedName) return;
 
   try {
-    const token = localStorage.getItem("authToken");
-
     const createdCategory = await api("/categories", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       body: JSON.stringify({
         name: trimmedName,
       }),
     });
 
-    setCategories((prev) => [...prev, createdCategory]);
+    //refetch update
     setNewCategoryName("");
   } catch (error) {
     console.error("Failed to create category", error);

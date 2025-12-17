@@ -39,7 +39,7 @@ export function useApi() {
       throw new Error(`API ${response.status}: ${message}`);
     }
 
-    return response.json();
+    return response.body;
   };
 }
 
