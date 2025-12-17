@@ -33,6 +33,6 @@ export default function ManagedCampaignsPage() {
                     Tip: vlož sem reálné ID projektu z backendu a otevři edit stránku.
                 </p>
             </div>
-        </div>
-    );
+    </div>
+  );
 }
