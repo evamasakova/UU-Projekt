@@ -25,14 +25,6 @@ const TABS = [
   { id: "users", label: "Users" },
 ];
 
-const INITIAL_CATEGORIES = [
-  { id: 1, name: "Technology", slug: "Innovate with technology" },
-  { id: 2, name: "Health", slug: "Support healthcare initiatives" },
-  { id: 3, name: "Education", slug: "Expand access to education" },
-  { id: 4, name: "Community", slug: "Build stronger communities" },
-  { id: 5, name: "Environment", slug: "Protect our environment" },
-];
-
 export default function AdminPanelList() {
   const [activeTab, setActiveTab] = useState("categories");
   const [categories, setCategories] = useState([]);
@@ -56,12 +48,9 @@ export default function AdminPanelList() {
       return;
     }
 
-    const slug = trimmedName
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-");
-
-    const alreadyExists = categories.some((category) => category.slug === slug);
+    const alreadyExists = categories.some(
+      (category) => (category.name || "").toLowerCase() === trimmedName.toLowerCase()
+    );
 
     if (alreadyExists) {
       setNewCategoryName("");
@@ -73,7 +62,6 @@ export default function AdminPanelList() {
       {
         id: Date.now(),
         name: trimmedName,
-        slug,
       },
     ]);
     setNewCategoryName("");
@@ -176,7 +164,6 @@ export default function AdminPanelList() {
                   <p className="text-base font-semibold text-gray-900">
                     {category.name}
                   </p>
-                  <p className="text-sm text-gray-500">{category.slug}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
