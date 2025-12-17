@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Plus, Trash2, Pencil } from "lucide-react";
 import PrimaryButton from "../buttons/PrimaryButton.jsx";
 import AdminPanelModal from "./AdminPanelModal.jsx";
@@ -19,71 +19,82 @@ export default function AdminPanelList() {
   const [categories, setCategories] = useState([]);
   const [users, setUsers] = useState([]);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [addError, setAddError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
+
   const { campaigns } = useCampaigns();
-  const fetchedRef = React.useRef(false);
   const api = useApi();
 
-  const fetchAdminPanelData = async () => {
-    if (fetchedRef.current) return [categories, campaigns, users];
-    fetchedRef.current = true;
-
-    const resCat = await api("/categories", { method: "GET" });
-    const resCam = await api("/projects", { method: "GET" });
-    const resUsers = await api("/users", { method: "GET" });
-
-    console.log("Fetched categories and campaigns:", resCat, resCam, resUsers);
-
-    return [await resCat, await resCam, await resUsers];
+  const fetchCategories = async () => {
+    const res = await api("/categories", { method: "GET" });
+    const list = res?.data ?? res?.result ?? res ?? [];
+    setCategories(list.filter((c) => c && c.name));
   };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   const isAddDisabled = useMemo(
     () => newCategoryName.trim().length === 0,
     [newCategoryName]
   );
 
- 
+  const handleAddCategory = async (event) => {
+    event.preventDefault();
 
-const handleAddCategory = async (event) => {
-  event.preventDefault();
+    const trimmedName = newCategoryName.trim();
+    if (!trimmedName) return;
 
-  const trimmedName = newCategoryName.trim();
-  if (!trimmedName) return;
+    setAddError("");
 
-  try {
-    const token = localStorage.getItem("authToken");
+    const exists = categories.some(
+      (c) => c?.name?.toLowerCase() === trimmedName.toLowerCase()
+    );
 
-    const createdCategory = await api("/categories", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        name: trimmedName,
-      }),
-    });
+    if (exists) {
+      setAddError("Category already exists");
+      return;
+    }
 
-    setCategories((prev) => [...prev, createdCategory]);
-    setNewCategoryName("");
-  } catch (error) {
-    console.error("Failed to create category", error);
-  }
-};
+    try {
+      await api("/categories", {
+        method: "POST",
+        body: JSON.stringify({ name: trimmedName }),
+      });
+
+      await fetchCategories();
+      setNewCategoryName("");
+    } catch (error) {
+      if (error?.message?.includes("409")) {
+        setAddError("Category already exists");
+      } else {
+        console.error("Failed to create category", error);
+      }
+    }
+  };
+
   const handleDeleteCategory = (category) => {
     setCategoryToDelete(category);
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    if (categoryToDelete) {
-      setCategories((prev) =>
-        prev.filter((category) => category.id !== categoryToDelete.id)
-      );
+  const handleConfirmDelete = async () => {
+    if (!categoryToDelete) return;
+
+    try {
+      await api(`/categories/${categoryToDelete.id}`, {
+        method: "DELETE",
+      });
+
+      await fetchCategories();
       setIsDeleteModalOpen(false);
       setCategoryToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete category", error);
     }
   };
 
@@ -102,12 +113,8 @@ const handleAddCategory = async (event) => {
     setEditingCategory(null);
   };
 
-  const handleSaveCategory = (updatedCategory) => {
-    setCategories((prev) =>
-      prev.map((category) =>
-        category.id === updatedCategory.id ? updatedCategory : category
-      )
-    );
+  const handleSaveCategory = async () => {
+    await fetchCategories();
   };
 
   return (
@@ -139,20 +146,40 @@ const handleAddCategory = async (event) => {
               Add New Category
             </h2>
             <form
-              className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center"
+              className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-start"
               onSubmit={handleAddCategory}
             >
-              <input
-                type="text"
-                value={newCategoryName}
-                onChange={(event) => setNewCategoryName(event.target.value)}
-                placeholder="Category name"
-                className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-200"
-              />
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={newCategoryName}
+                  onChange={(e) => {
+                    setNewCategoryName(e.target.value);
+                    setAddError("");
+                  }}
+                  placeholder="Category name"
+                  className={`w-full rounded-md border px-3 py-2 text-sm ${
+                    addError
+                      ? "border-red-400 focus:border-red-500"
+                      : "border-gray-300"
+                  }`}
+                />
+                {addError && (
+                  <div className="absolute left-0 top-full mt-2 z-10">
+                    <div className="relative rounded-md bg-red-500 px-3 py-1.5 text-xs text-white shadow-lg">
+                      {addError}
+                      <div className="absolute -top-1 left-4 h-2 w-2 rotate-45 bg-red-500" />
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <PrimaryButton
                 type={isAddDisabled ? "button" : "submit"}
-                icon={<Plus className="h-4 w-4" strokeWidth={2} />}
-                className={`${isAddDisabled ? "pointer-events-none opacity-60" : ""} !bg-purple-600 !border-purple-600 hover:!bg-purple-700`}
+                icon={<Plus className="h-4 w-4" />}
+                className={`${
+                  isAddDisabled ? "pointer-events-none opacity-60" : ""
+                } !bg-purple-600 !border-purple-600`}
               >
                 Add
               </PrimaryButton>
@@ -160,37 +187,37 @@ const handleAddCategory = async (event) => {
           </div>
 
           <div className="space-y-4">
-            {categories.map((category) => (
-              <div
-                key={category.id}
-                className="flex items-center justify-between rounded-md border border-gray-200 bg-white px-5 py-4 shadow-sm"
-              >
-                <div>
-                  <p className="text-base font-semibold text-gray-900">
-                    {category.name}
-                  </p>
-                  <p className="text-sm text-gray-500">{category.slug}</p>
+            {categories
+              .filter((category) => category && category.name)
+              .map((category) => (
+                <div
+                  key={category.id}
+                  className="flex items-center justify-between rounded-md border border-gray-200 bg-white px-5 py-4 shadow-sm"
+                >
+                  <div>
+                    <p className="text-base font-semibold text-gray-900">
+                      {category.name}
+                    </p>
+                    <p className="text-sm text-gray-500">{category.slug}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleEditCategory(category)}
+                      className="inline-flex items-center gap-1 rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteCategory(category)}
+                      className="inline-flex items-center gap-1 rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleEditCategory(category)}
-                    aria-label={`Edit ${category.name}`}
-                    className="inline-flex items-center gap-1 rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-600"
-                  >
-                    <Pencil className="h-4 w-4" strokeWidth={2} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteCategory(category)}
-                    aria-label={`Delete ${category.name}`}
-                    className="inline-flex items-center gap-1 rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-600"
-                  >
-                    <Trash2 className="h-4 w-4" strokeWidth={2} />
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         </section>
       )}
@@ -201,10 +228,6 @@ const handleAddCategory = async (event) => {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Campaign Management
             </h2>
-            <p className="text-sm text-gray-600 mb-4">
-              Review and approve submitted campaigns. Campaigns with
-              "PendingApproval" status can be approved or rejected.
-            </p>
 
             {campaigns.length === 0 ? (
               <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-6 text-center text-gray-500">
